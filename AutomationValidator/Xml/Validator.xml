@@ -1,0 +1,11 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Validators>
+  <Validator Type="Person">
+    <Property Name="LastName" FieldNullable="false" Visible="1" ErrorMessage="Không được trống" />
+    <Property Name="FirstName" FieldLength="10" Visible="1" ErrorMessage="Quá độ dài" />
+  </Validator>
+  <Validator Type="Address">
+    <Property Name="City" FieldNullable="false" Visible="1" ErrorMessage="Không được trống" />
+    <Property Name="State" FieldLength="10" Visible="1" ErrorMessage="Quá độ dài" />
+  </Validator>
+</Validators>

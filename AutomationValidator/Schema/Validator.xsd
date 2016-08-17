@@ -1,0 +1,25 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xs:schema attributeFormDefault="unqualified" elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:element name="Validators">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element maxOccurs="unbounded" name="Validator">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element maxOccurs="unbounded" name="Property">
+                <xs:complexType>
+                  <xs:attribute name="Name" type="xs:string" use="required" />
+                  <xs:attribute name="FieldNullable" type="xs:boolean" use="optional" />
+                  <xs:attribute name="Visible" type="xs:unsignedByte" use="required" />
+                  <xs:attribute name="ErrorMessage" type="xs:string" use="required" />
+                  <xs:attribute name="FieldLength" type="xs:unsignedByte" use="optional" />
+                </xs:complexType>
+              </xs:element>
+            </xs:sequence>
+            <xs:attribute name="Type" type="xs:string" use="required" />
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>
