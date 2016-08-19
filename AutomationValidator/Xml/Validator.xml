@@ -1,11 +1,11 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <Validators>
   <Validator Type="Person">
-    <Property Name="LastName" FieldNullable="false" Visible="1" ErrorMessage="Không được trống" />
-    <Property Name="FirstName" FieldLength="10" Visible="1" ErrorMessage="Quá độ dài" />
+    <Property Name="LastName" FieldNullable="false" Visible="1" NullableMessage="Tên không được trống" />
+    <Property Name="FirstName" FieldNullable="true" FieldLength="5" Visible="1" LengthMessage="Họ quá độ dài" />
   </Validator>
   <Validator Type="Address">
-    <Property Name="City" FieldNullable="false" Visible="1" ErrorMessage="Không được trống" />
-    <Property Name="State" FieldLength="10" Visible="1" ErrorMessage="Quá độ dài" />
+    <Property Name="City" FieldNullable="false" Visible="1" NullableMessage="Thành phố không được trống" />
+    <Property Name="State" FieldLength="5" Visible="1" LengthMessage="Quốc gia quá độ dài" />
   </Validator>
 </Validators>

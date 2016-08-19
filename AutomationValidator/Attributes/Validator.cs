@@ -1,37 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Reflection;
-using System.Text.RegularExpressions;
-using System.Globalization;
+using System.ComponentModel;
+using System.Linq;
 using System.Collections;
+using AutomationValidator.Manager;
 
 namespace AutomationValidator.Attributes
 {
 
-
     public class Validator
     {
-
-        public static int stt = 1;
-
-        public int IntLc = 0;
-        public Validator(int intLcnt)
+        public static List<String> Validate(object o)
         {
-            IntLc = intLcnt;
-        }
-
-        public Validator()
-        {
-        }
-
-
-        public static List<String> Validate(object o, int i)
-        {
-            return Validate(o, false, "E", i);
+            return Validate(o, false);
         }
 
         public static List<String> Validate
-            (object o, bool allowNullObject, string nullMessage, int i)
+            (object o, bool allowNullObject)
         {
             var errors = new List<String>();
             if (o != null)
@@ -43,21 +28,21 @@ namespace AutomationValidator.Attributes
                     {
                         int a = errors.Count;
                         ((IDbValidationAttribute)customAttribute).Validate
-                            (o, info, errors, i);
+                            (o, info, errors);
                         if (errors.Count > a) break;
                         if (info.PropertyType.IsClass ||
                             info.PropertyType.IsInterface)
                         {
                             errors.AddRange(Validate
-                                                (info.GetValue(o, null), true, null, i));
+                                                (info.GetValue(o, null), true));
                         }
                         if (info.PropertyType.IsGenericType)
                         {
-                            IList list = info.GetValue(o, null) as IList;
-                            for (int j = 0; j < list.Count; j++)
+                            var list = info.GetValue(o, null) as IList;
+                            foreach (object t in list)
                             {
                                 errors.AddRange(Validate
-                                                (list[j], true, null, j));
+                                                    (t, true));
                             }
                         }
                     }
@@ -68,7 +53,7 @@ namespace AutomationValidator.Attributes
                         (typeof(IDbValidationAttribute), true))
                     {
                         ((IDbValidationAttribute)customAttribute).Validate
-                            (o, method, errors, i);
+                            (o, method, errors);
                     }
                 }
             }
@@ -79,137 +64,46 @@ namespace AutomationValidator.Attributes
             }
             return errors;
         }
-    }
 
-    public interface IDbValidationAttribute
-    {
-        void Validate(object o, PropertyInfo propertyInfo, List<String> errors, int i);
-        void Validate(object o, MethodInfo methodInfo, List<String> errors, int i);
-    }
-
-    [AttributeUsage(AttributeTargets.Property)]
-    public class FieldNullableAttribute : Attribute, IDbValidationAttribute
-    {
-        private string _mMessage = "{0} cannot be null";
-
-        private string _ReplaceName;
-
-        public string ReplaceName
+        public static List<String> DynamicValidate<T>(T o) where T : class
         {
-            get
-            {
-                return _ReplaceName;
-            }
-            set
-            {
-                _ReplaceName = value ?? string.Empty;
-            }
-        }
-
-        public FieldNullableAttribute()
-        {
-            _ReplaceName = string.Empty;
-            IsNullable = false;
-        }
-
-        public bool IsNullable { get; set; }
-
-        public string Message
-        {
-            get
-            {
-                return _mMessage;
-            }
-            set
-            {
-                _mMessage = value ?? String.Empty;
-            }
-        }
-        public void Validate(object o, MethodInfo info,
-                             List<String> errors, int i) { }
-        public void Validate(object o, PropertyInfo propertyInfo,
-                             List<String> errors, int i)
-        {
-            object value = propertyInfo.GetValue(o, null);
-            if ((value is string))
-            {
-                if (String.IsNullOrEmpty(((string)value)) && !IsNullable)
+            TypeDescriptor.AddProvider(new CustomTypeDescriptionProvider<T>(TypeDescriptor.GetProvider(typeof(T))), o);
+            var errors = new List<String>();
+            o.GetType().GetProperties().ToList().ForEach
+                (info =>
                 {
-                    String item = "Lỗi";
-                    errors.Add(item);
+                    PropertyDescriptor propDescriptor = TypeDescriptor.GetProperties(o).Cast<PropertyDescriptor>().SingleOrDefault(p => info.Name == p.Name);
+                    if (propDescriptor != null)
+                    {
+                        var attributeList =
+                          propDescriptor.Attributes.Cast<Attribute>().Where(p => p.GetType().GetInterface(typeof(IDbValidationAttribute).Name, false) != null && p.GetType().GetInterface(typeof(IDbValidationAttribute).Name, false).Name == typeof(IDbValidationAttribute).Name).ToList();
+                        foreach (Attribute customAttribute in attributeList)
+                        {
+                            int a = errors.Count;
+                            ((IDbValidationAttribute)customAttribute).Validate
+                                (o, info, errors);
+                            if (errors.Count > a) break;
+                            if (info.PropertyType.IsClass ||
+                                info.PropertyType.IsInterface)
+                            {
+                                errors.AddRange(Validate
+                                                    (info.GetValue(o, null), true));
+                            }
+                            if (info.PropertyType.IsGenericType)
+                            {
+                                IList list = info.GetValue(o, null) as IList;
+                                foreach (object t in list)
+                                {
+                                    errors.AddRange(Validate
+                                                        (t, true));
+                                }
+                            }
+                        }
+                    }
                 }
-            }
-            else
-            {
-                if (value == null && !IsNullable)
-                {
-                    String item = "Lỗi";
-                    errors.Add(item);
-                }
-            }
-        }
-    }
+                 );
+            return errors;
 
-    [AttributeUsage(AttributeTargets.Property)]
-    public class FieldLengthAttribute : Attribute, IDbValidationAttribute
-    {
-        private string _ReplaceName;
-
-        public string ReplaceName
-        {
-            get
-            {
-                return _ReplaceName;
-            }
-            set
-            {
-                _ReplaceName = value ?? string.Empty;
-            }
-        }
-        private string _mMessage = "";
-
-        public int MaxLength { get; set; }
-
-        public string FixLength
-        {
-            get
-            ;
-            set;
-        }
-
-        public string Message
-        {
-            get
-            {
-                return _mMessage;
-            }
-            set
-            {
-                _mMessage = value ?? String.Empty;
-            }
-        }
-        public void Validate(object o, MethodInfo info, List<String> errors, int i) { }
-        public void Validate(object o, PropertyInfo propertyInfo,
-                             List<String> errors, int i)
-        {
-            var value = propertyInfo.GetValue(o, null);
-            if (!(value is string)) return;
-            if (MaxLength != 0 && ((string)value).Length > MaxLength)
-            {
-                String item = "Lỗi";
-                errors.Add(item);
-                //errors.Add(String.Format
-                //               (_mMessage, propertyInfo.Name, MaxLength)+"-"+i.ToString("0000"));
-            }
-
-            if (!string.IsNullOrEmpty(FixLength))
-            {
-                if (MaxLength != 0 && ((string)value).Length.ToString() != FixLength)
-                {
-                    String item = "Lỗi";
-                    errors.Add(item);
-                }
-            }
         }
     }
 }

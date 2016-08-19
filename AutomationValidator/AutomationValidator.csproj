@@ -35,6 +35,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
+    <Reference Include="System.configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -43,13 +44,26 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Attributes\FieldLengthAttribute.cs" />
+    <Compile Include="Attributes\FieldNullAttribute.cs" />
+    <Compile Include="Attributes\IValidator.cs" />
     <Compile Include="Attributes\Validator.cs" />
+    <Compile Include="Manager\ExtensionValidatorProvider.cs" />
+    <Compile Include="Manager\ValidationManager.cs" />
+    <Compile Include="Models\Address.cs" />
     <Compile Include="Models\Person.cs" />
+    <Compile Include="Models\Validator.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Schema\" />
+    <Content Include="Xml\Validator.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+    <None Include="Schema\Validator.xsd">
+      <SubType>Designer</SubType>
+    </None>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

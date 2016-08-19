@@ -1,25 +1,26 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<xs:schema attributeFormDefault="unqualified" elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema">
-  <xs:element name="Validators">
+<xs:schema id="Validators" xmlns="" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+  <xs:element name="Validators" msdata:IsDataSet="true" msdata:UseCurrentLocale="true">
     <xs:complexType>
-      <xs:sequence>
-        <xs:element maxOccurs="unbounded" name="Validator">
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element name="Validator">
           <xs:complexType>
             <xs:sequence>
-              <xs:element maxOccurs="unbounded" name="Property">
+              <xs:element name="Property" minOccurs="0" maxOccurs="unbounded">
                 <xs:complexType>
-                  <xs:attribute name="Name" type="xs:string" use="required" />
-                  <xs:attribute name="FieldNullable" type="xs:boolean" use="optional" />
-                  <xs:attribute name="Visible" type="xs:unsignedByte" use="required" />
-                  <xs:attribute name="ErrorMessage" type="xs:string" use="required" />
-                  <xs:attribute name="FieldLength" type="xs:unsignedByte" use="optional" />
+                  <xs:attribute name="Name" type="xs:string" />
+                  <xs:attribute name="FieldNullable" type="xs:string" />
+                  <xs:attribute name="Visible" type="xs:string" />
+                  <xs:attribute name="NullableMessage" type="xs:string" />
+                  <xs:attribute name="FieldLength" type="xs:string" />
+                  <xs:attribute name="LengthMessage" type="xs:string" />
                 </xs:complexType>
               </xs:element>
             </xs:sequence>
-            <xs:attribute name="Type" type="xs:string" use="required" />
+            <xs:attribute name="Type" type="xs:string" />
           </xs:complexType>
         </xs:element>
-      </xs:sequence>
+      </xs:choice>
     </xs:complexType>
   </xs:element>
 </xs:schema>
